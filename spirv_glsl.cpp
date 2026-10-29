@@ -32,7 +32,7 @@
 #include <utility>
 #include <array>
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__scarlet__)
 #include <langinfo.h>
 #endif
 #include <locale.h>
@@ -221,8 +221,9 @@ void CompilerGLSL::init()
 	const struct lconv *conv = localeconv();
 	if (conv && conv->decimal_point)
 		current_locale_radix_character = *conv->decimal_point;
-#elif defined(__ANDROID__) && __ANDROID_API__ < 26
+#elif (defined(__ANDROID__) && __ANDROID_API__ < 26) || defined(__scarlet__)
 	// nl_langinfo is not supported on this platform, fall back to the worse alternative.
+	// Scarlet's C/POSIX-only locale data is immutable, so this query is thread-safe.
 	const struct lconv *conv = localeconv();
 	if (conv && conv->decimal_point)
 		current_locale_radix_character = *conv->decimal_point;
